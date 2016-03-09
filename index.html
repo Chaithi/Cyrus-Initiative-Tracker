@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Roll for Initiative</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <!--<link rel="stylesheet" href="css/main.css"> -->
+        <!-- Bootstrap -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/main.css" rel="stylesheet">
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+        <!-- Add your site or application content here -->
+        <nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+        <a class="navbar-brand" href="http://www.about.me/robertthayer" target="_blank">Roll for Initiative (Cyrus) by Robert Thayer</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><button type="button" class="btn btn-default hidden" id="newPlayerButton" onclick="showNewPlayerForm()">Add New Player</button></li>
+          <li><button type="button" class="btn btn-default hidden" id="getNextPlayerButton" onclick="getNextPlayer()">Next Player</button></li>
+          <li><button type="button" class="btn btn-default hidden" id="removePlayerButton" onclick="removePlayer()">Remove Player</button></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        <li><button class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">About</button></li>
+        <li><button type="button" class="btn btn-default" id="diceRollerButton" onclick="showDiceArea()">Dice Roller</button></li>
+      <li><button type="button" class="btn btn-default" id="combatRollerButton" onclick="showCombatArea()">Combat Roller</button></li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+        <span class="label label-default">Current Combatant(s):</span>
+        
+        <h1><span id="nextPlayerLabel"></span></h1>
+        <h4>Participants left to act this round:</h4>
+        
+        <div id="playerListArea" class="btn-group" data-toggle="buttons"></div>
+        
+        <h4>Participants that have acted this round:</h4>
+        <div id="gonePlayersArea" class="btn-group" data-toggle="buttons"></div>
+        <br>
+        <div id="toolbox" class="row hidden">
+            <!-- Mod Dice section. Not used in Cyrus
+            
+            <div class="col-lg-1 col-sm-3 col-md-2">
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <button type="button" id="diceModButton" class="btn btn-default" onclick="modDice()">+/- Dice</button>
+                    </span>
+                    <input id="modDiceSpin" class="form-control" type="number" value="0" min="-4" max="4">
+                </div>
+            </div> -->
+            <div class="col-lg-1 col-sm-4 col-md-3">
+                <div class="input-group input-group-sm">
+                    <input id="modBaseSpin" class="form-control" type="number" value="0" min="-25" max="25">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" id="baseModButton" onclick="modBase()">+/- Base</button>
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-lg-1 col-sm-4 col-md-3">
+                <div class="input-group-sm input-group">
+                    <input class="form-control" id="modScoreSpin" type="number" value="0" min="-25" max="25">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="scoreModButton" value="+/- Score" onclick="modTotalScore()">+/- Score</button>
+                    </span>
+                </div>
+            </div>
+                <button class="btn btn-success" type="button" id="healButton" onclick="quickMod('+')"><span class="glyphicon glyphicon-heart"></span>Quick +1</button>
+                <button type="button" class="btn btn-danger" id="woundButton" onclick="quickMod('-')"><span class="glyphicon glyphicon-tint"></span>Quick -1</button>
+        </div>
+        
+<!-- Begin Basic Dice Roller -->
+        <div class="container-fluid">
+            <div class="row">
+                <div id="rollDiceDiv" class="hidden bg-info col-lg-6">
+                    <h4><span class="label label-info">Dice Roller</span></h4>
+                    <div class="row">
+                        <div class="col-lg-3 col-lg-offset-1">
+                            <div class="input-group">
+                                <span class="input-group-addon">Dice</span>
+                                <input id="numOfDiceSpin" class="form-control" type="number" value="1" min="1" max="99">
+                            </div>
+                        </div>
+                        <div class="col-lg-5 col-lg-offset-1">
+                            <div class="input-group">
+                                <span class="input-group-addon">Success is</span>
+                                <input class="form-control" id="skillSpin" type="number" value="8" min="1" max="10">
+                                <span class="input-group-addon">or higher.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-offset-1">
+                            <h3><button type="button" class="btn btn-default" id="rollDiceButton" onclick="rollDice()">Roll Dice</button>
+                            <span class="label label-default label-lg" id="hitsLabel"></span></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Begin Combat Rolling Section -->
+        <div class="container-fluid">
+            <div class="row">
+                <div id="combatRollDiceDiv" class="hidden bg-info col-xs-12 col-md-12 col-lg-6">
+                    <h4><span class="label label-info">Combat Roller</span></h4>
+                    <div class="row">
+                        <div class="col-xs-5 col-md-4 col-lg-3 col-md-offset-1">
+                            <div class="input-group">
+                                <span class="input-group-addon">Dice</span>
+                                <input class="form-control" id="cNumOfDiceSpin" type="number" value="8" min="1" max="99">            
+                            </div>
+                        </div>
+                        <div class="col-xs-5 col-md-5 col-lg-5">
+                            <div class="input-group">
+                                <span class="input-group-addon">Success is</span>
+                                <input class="form-control" id="cSkillSpin" type="number" value="8" min="1" max="10">
+                                <span class="input-group-addon">or higher.</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">R#</span>
+                                <input class="form-control" id="rSpin" type="number" value="1" min="1" max="10">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-offset-1">
+                            <h3><button class="btn btn-default" type="button" id="cRollDiceButton" onclick="combatRollDice()">Roll to Hit</button></h3>
+                        </div>
+                    </div>
+            
+            <!--Manual Hits. Allow PCs to roll hits-->
+                    <div class="row">
+                        <div class="col-lg-4 col-lg-offset-1">
+                            <div class="input-group">
+                                <span class="input-group-addon">Net Hits</span>
+                                <input class="form-control" id="manualHitSpin" type="number" value="0" min="0" max="20" disabled>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">Manual roll for hits
+                                    <input id="manualCheck" type="checkbox" onclick="activateForm()">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-offset-1 col-lg-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">Weapon Dmg</span>
+                                <input class="form-control" id="weaponSpin" type="number" value="4" min="1" max="20" disabled>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="input-group">
+                                <span class="input-group-addon">Armor</span>
+                                <input class="form-control" id="armorSpin" type="number" value="4" min="1" max="10" disabled>
+                                <span class="input-group-addon">/</span>
+                                <input class="form-control" id="maxArmorSpin" type="number" value="16" min="1" max="50" disabled>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-offset-1 col-lg-4">
+                            <div class="input-group">
+                                <span class="input-group-addon">Armor Dice</span>
+                                <input id="aDiceSpin" class="form-control" type="number" value="4" min="1" max="10" disabled>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                <span class="input-group-addon">Armor success is</span>
+                                <input class="form-control" id="aSkillSpin" type="number" value="8" min="1" max="10" disabled>
+                                <span class="input-group-addon">or higher.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-offset-1">
+                            <h3><button type="button" class="btn btn-default" id="aRollDiceButton" onclick="armorRollDice()">Calculate Damage</button>
+                            <span class="label label-default label-lg" id="damageLabel"></span></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- New Player Section -->
+        <div class="container-fluid">
+            <div class="row">
+                <div id="newPlayerDiv" class="newPlayer col-lg-6">
+                    <h4><span class="label label-info">New Combatant</span></h4>
+                    <form id="newPlayerForm" action="#">
+                        <div class="row">
+                            <div class="col-lg-offset-1 col-lg-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Name</span>
+                                    <input class="form-control" id="nameInput" type="text" maxlength="25">
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Auto-roll dice?
+                                        <input id="npcRadio" type="checkbox" onclick="selectNPC()">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div id="initDiv" class="col-lg-offset-1 col-lg-4">
+                                <div class="input-group">
+                                    <span class="input-group-addon">Initiative Score</span>
+                                    <input class="form-control" id="scoreSpin" type="number" value="1" min="0" max="20">
+                                    <span class="input-group-addon hidden" id="diceSpinLabel"> + </span>
+                                    <input class="form-control hidden" id="diceSpin" type="number" value="1" min="1" max="1" disabled>
+                                    <span class="input-group-addon hidden" id="diceLabel">d10</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <h3><button class="btn btn-default col-lg-offset-1" type="button" id="addButton" onclick="addPlayer(this.form)">Add Combatant</button></h3>   
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <br>
+        <span class="label label-default">Tips:</span>
+        <h5>Press spacebar to automatically go to next player.</h5>
+        <h5><span class="label label-success">Green</span> = Dice not rolled automatically. <span class="label label-primary">Blue</span> = Dice rolled automatically.</h5>
+        <span>Tip your coder!</span>
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+        <input type="hidden" name="cmd" value="_s-xclick">
+        <input type="hidden" name="hosted_button_id" value="LJNMBBZXGCSBG">
+        <input type="image" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-small.png" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+        <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+        </form>
+        <br>
+        <span class="label">Log:</span><br>
+        <div class="well well-sm col-lg-4 bg-info" id="logArea"></div>
+        
+<!-- About Modal -->
+<div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <h1>Roll for Initiative - Cyrus v1.1 <small>by <a href="http://www.about.me/robertthayer">Robert Thayer</a></h1>
+            A tool for Cyrus GMs to track initiative.<br>
+            Click on a player to select them. You can then modify their score.</small>
+        </div>
+    </div>
+  </div>
+</div>
+
+            
+        
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+         <script type="text/javascript">
+      $(document).ready(function() {
+        $(document).keydown(function(e) {
+          if (e.keyCode == '32' && document.getElementById('nameInput') !== document.activeElement) {
+            getNextPlayer();
+          }
+        });
+      });
+    </script>
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+       <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-53692388-1', 'auto');
+        ga('send', 'pageview');
+
+      </script>
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="js/bootstrap.min.js"></script>
+        <script src="js/bootbox.min.js"></script>
+    </body>
+</html>

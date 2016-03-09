@@ -1,0 +1,18 @@
+#logArea {
+    overflow: auto;
+    width: 600px;
+    height: 200px;
+    color: #000;
+}
+body {
+    color: #fff;
+    background-color: transparent;
+}
+html { 
+  background: url('../img/bgclean.jpg') no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
